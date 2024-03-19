@@ -18,27 +18,32 @@ public class Philosopher extends Thread {
     @Override
     public void run() {
         System.out.println(super.getName() + " started");
-        try {
-            while (food > 0) {
+
+        while (food > 0) {
+            try {
                 semaphore.acquire();
                 takeForks();
                 eat();
                 leaveForks();
                 semaphore.release();
                 System.out.println();
+            } catch (Exception e) {
+                leaveForks();
+                semaphore.release();
+                useThreadSleep(500);
+                System.out.println(e.getMessage() + "\n");
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            System.out.println(super.getName() + " finished");
         }
+
+        System.out.println(super.getName() + " finished");
+
     }
 
-    public void eat() throws InterruptedException {
+    public void eat() {
         if (!usingForks()) throw new RuntimeException(super.getName() + " cannot eat without forks");
         if (food <= 0) throw new RuntimeException(super.getName() + " cannot eat, because there is no more food");
 
-        Thread.sleep(1500);
+        useThreadSleep(1500);
         food--;
         System.out.println(super.getName() + " ate a bit, status of plate: " + food);
     }
@@ -52,11 +57,10 @@ public class Philosopher extends Thread {
     }
 
     public void leaveForks() {
-        if (!usingForks())
-            throw new RuntimeException(super.getName() + " cannot release forks, because forks are not in use");
-
-        forks.forEach(Fork::leaveFork);
-        System.out.println(super.getName() + " released forks");
+        forks.forEach(fork -> {
+            if (fork.isUsingFork()) fork.leaveFork();
+        });
+//        System.out.println(super.getName() + " released forks");
     }
 
     private boolean usingForks() {
@@ -71,5 +75,11 @@ public class Philosopher extends Thread {
         return isFree;
     }
 
-
+    private void useThreadSleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

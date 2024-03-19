@@ -5,7 +5,7 @@ import java.util.concurrent.Semaphore;
 
 public class Main {
     public static void main(String[] args) {
-        Semaphore semaphore = new Semaphore(1, true);
+        Semaphore semaphore = new Semaphore(5, true);
 
         Fork[] forks = {
                 new Fork("Fork 01"),
@@ -32,7 +32,5 @@ public class Main {
                 System.out.println(philosopher.getName() + " ERROR");
             }
         });
-
-
     }
 }

@@ -28,13 +28,11 @@ public class Fork {
         System.out.println(getThreadName() + " release " + name);
     }
 
-    public boolean isUsingFork(){
+    public boolean isUsingFork() {
         return mutex.isHeldByCurrentThread();
     }
 
     private String getThreadName() {
         return Thread.currentThread().getName();
     }
-
-
 }
